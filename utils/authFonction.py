@@ -1,10 +1,7 @@
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-
-SECRET_KEY = "hnb0#9fb&wobf)nwbdb!dwon`~0020dbeob_wdnob-|eo bo3$iwv&gwi^wi25.>wibud?oi2b"
-ALGORITHM = "HS256"
-EXPIRATION = 30
+from utils.config import settings
 
 pwd_context = CryptContext(schemes= ["bcrypt"], deprecated= "auto")
 
@@ -16,13 +13,13 @@ def verifier_hash(mdp: str, mdp_hasher):
 
 def creer_token(data: dict):
     donnee = data.copy()
-    expiration = datetime.utcnow() + timedelta(minutes = EXPIRATION)
+    expiration = datetime.utcnow() + timedelta(minutes = settings.EXPIRATION)
     donnee.update({"exp": expiration})
-    return jwt.encode(donnee, SECRET_KEY, algorithm= ALGORITHM)
+    return jwt.encode(donnee, settings.SECRET_KEY, algorithm= settings.ALGORITHM)
 
 def verifier_token(token: str):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms= [ALGORITHM])
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms= [settings.ALGORITHM])
         email = payload.get("sub")
         if email is None:
             return None
